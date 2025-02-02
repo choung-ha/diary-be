@@ -1,0 +1,2 @@
+### AI 메시지 생성 요청 ###
+GET http://localhost:8080/ai?message=Tell%20me%20a%20joke
