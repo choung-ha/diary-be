@@ -20,4 +20,12 @@ public class LLMController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("ai/mock-feedback")
+    public ResponseEntity<?> generateMockFeedback(@RequestBody FeedBackRequest feedBackRequest) {
+        Map<String, Object> response = this.llmApiService.generateMockFeedback(feedBackRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    
+
 }

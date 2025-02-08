@@ -5,13 +5,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import diary.model.FeedBackRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
 public class LLMApiService {
+    @Value("${spring.ai.openai.base-url}")
+    private String mockUrl;
     private final OpenAiChatModel openAiChatModel;
 
     private static final StringBuilder prefixMessage = new StringBuilder("""
@@ -45,4 +50,24 @@ public class LLMApiService {
         }
         return Map.of("feedbacks", feedbackMap);
     }
+
+    public Map<String, Object> generateMockFeedback(FeedBackRequest feedBackRequest) {
+        StringBuilder requestMessage = new StringBuilder();
+        requestMessage.append(prefixMessage).append(feedBackRequest.content());
+
+        Map<String, Object> feedbackMap = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.getForEntity(mockUrl, String.class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                feedbackMap = objectMapper.readValue(response.getBody(), new TypeReference<>() {});
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Map.of("feedbacks", feedbackMap);
+    }
+
+
 }
