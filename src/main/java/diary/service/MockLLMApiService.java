@@ -4,15 +4,20 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import diary.model.FeedBackRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
+@Profile("stress")
 @Service
 @RequiredArgsConstructor
-public class LLMApiService {
-    private final OpenAiChatModel openAiChatModel;
+public class MockLLMApiService {
+    @Value("${spring.ai.openai.base-url}")
+    private String mockUrl;
 
     private static final StringBuilder prefixMessage = new StringBuilder("""
             당신은 본문 속 영어 문장들을 보도 더 나은 영어 문장으로 바꾸는 일을 담당합니다. 당신이 해야할 일은 아래 본문의 글을 보고 단어들을 더 나은 방향이 되도록 안내해주는 일입니다.
@@ -30,16 +35,18 @@ public class LLMApiService {
             -- 본문 --
             """);
 
-    public Map<String, Object> generateFeedback(FeedBackRequest feedBackRequest) {
+    public Map<String, Object> generateMockFeedback(FeedBackRequest feedBackRequest) {
         StringBuilder requestMessage = new StringBuilder();
         requestMessage.append(prefixMessage).append(feedBackRequest.content());
 
-        String feedback = openAiChatModel.call(requestMessage.toString());
-        System.out.println(feedback);
         Map<String, Object> feedbackMap = null;
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            feedbackMap = objectMapper.readValue(feedback, new TypeReference<>() {});
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.getForEntity(mockUrl, String.class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                feedbackMap = objectMapper.readValue(response.getBody(), new TypeReference<>() {});
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

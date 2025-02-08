@@ -1,5 +1,5 @@
 ### AI feed back 생성 요청 ###
-GET http://35.216.109.137/llm-delayed
+POST http://35.216.109.137/llm-delayed
 Content-Type: application/json
 
 {
