@@ -22,6 +22,14 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter:1.0.0-SNAPSHOT'
+
+	// for monitoring
+	// Spring Boot Actuator: 애플리케이션 모니터링 및 상태 정보 제공
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	// GCP Cloud Monitoring으로 메트릭 전송
+	implementation 'io.micrometer:micrometer-registry-stackdriver'
+
 	implementation 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'

@@ -1,24 +1,4 @@
 spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/diary
-    username: ${DIARY_LOCAL_MYSQL_USERNAME}
-    password: ${DIARY_LOCAL_MYSQL_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
   ai:
     openai:
       base-url: ${MOCK_API_URL}
-      api-key: ${DIARY_OPEN_API_KEY}
-      chat:
-        options:
-          model: gpt-3.5-turbo
-
-
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
