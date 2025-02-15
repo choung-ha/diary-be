@@ -1,7 +1,6 @@
 package diary.config;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -18,8 +17,6 @@ public class AsyncConfig {
         executor.setMaxPoolSize(500);   // 최대 스레드 500개
         executor.setQueueCapacity(1000); // 큐에 1000개 대기 가능
         executor.setThreadNamePrefix("AsyncThread-");
-        executor.setKeepAliveSeconds(60); // 사용되지 않는 스레드 60초 유지
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy()); // 큐가 꽉 차면 호출 스레드에서 실행
         executor.initialize();
         return executor;
     }
