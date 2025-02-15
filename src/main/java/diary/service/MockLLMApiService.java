@@ -19,6 +19,10 @@ public class MockLLMApiService {
     @Value("${spring.ai.openai.base-url}")
     private String mockUrl;
 
+    private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+
     private static final StringBuilder prefixMessage = new StringBuilder("""
             당신은 본문 속 영어 문장들을 보도 더 나은 영어 문장으로 바꾸는 일을 담당합니다. 당신이 해야할 일은 아래 본문의 글을 보고 단어들을 더 나은 방향이 되도록 안내해주는 일입니다.
             대답은 무슨 일이 있어도 다음 형식으로 해주세요.
@@ -36,13 +40,10 @@ public class MockLLMApiService {
             """);
 
     public Map<String, Object> generateMockFeedback(FeedBackRequest feedBackRequest) {
-        StringBuilder requestMessage = new StringBuilder();
-        requestMessage.append(prefixMessage).append(feedBackRequest.content());
+//        String requestMessage = prefixMessage + feedBackRequest.content();
 
         Map<String, Object> feedbackMap = null;
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> response = restTemplate.getForEntity(mockUrl, String.class);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 feedbackMap = objectMapper.readValue(response.getBody(), new TypeReference<>() {});

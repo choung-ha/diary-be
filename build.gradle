@@ -33,6 +33,11 @@ dependencies {
 
 	implementation 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// Apache HttpClient (최신 안정 버전을 사용하세요)
+
+	implementation 'org.apache.httpcomponents.client5:httpclient5'
+
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
