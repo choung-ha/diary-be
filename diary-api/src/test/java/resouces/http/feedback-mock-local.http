@@ -1,0 +1,7 @@
+### 서버 제대로 돌아가는지 확인 ###
+POST http://localhost:8080/ai/mock-feedback
+Content-Type: application/json
+
+{
+  "content" : "Every morning, I wake up at 7 AM and start my day with a cup of coffee. I enjoy the quiet moments in the morning before the world gets too busy. After that, I take a quick shower and get ready for work. Since I work in the tech industry, most of my time is spent in front of a computer, coding and solving problems. During lunchtime, I usually eat at a nearby café or bring a homemade meal. I prefer simple and healthy food because it helps me stay focused throughout the day. In the afternoon, I often attend meetings and collaborate with my team on various projects. Even though work can be stressful at times, I enjoy the challenges because they help me grow."
+}

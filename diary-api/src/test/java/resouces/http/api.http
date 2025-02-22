@@ -1,0 +1,10 @@
+### Diary 생성 요청 ###
+POST http://localhost:8080/diary
+Content-Type: application/json
+
+{
+  "title" : "오늘의 일기",
+  "content" : "프로젝트 시작!",
+  "emotion" : "happy",
+  "feedback" : { }
+}
