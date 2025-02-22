@@ -38,6 +38,9 @@ dependencies {
 
 	implementation 'org.apache.httpcomponents.client5:httpclient5'
 
+	// common
+	implementation project(':diary-common')
+
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
