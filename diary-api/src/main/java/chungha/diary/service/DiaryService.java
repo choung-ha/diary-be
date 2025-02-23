@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class DiaryService {
@@ -20,11 +22,18 @@ public class DiaryService {
                 .title(req.title())
                 .content(req.content())
                 .emotion(req.emotion())
-                .feedback(req.feedback())
                 .userId(req.userId())
                 .build();
 
         logger.info(diary.toString());
         diaryRepository.insertDiary(diary);
+    }
+
+    public List<Diary> getAllDiary() {
+        return diaryRepository.getAllDiary();
+    }
+
+    public Diary getDiaryById(String diaryId) {
+        return diaryRepository.getDiaryById(diaryId);
     }
 }
