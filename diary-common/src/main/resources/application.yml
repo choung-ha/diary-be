@@ -1,4 +1,0 @@
-spring:
-  data:
-    mongodb:
-      uri: ${DIARY_ATLAS_MONGODB}
