@@ -1,15 +1,18 @@
 package diary.service;
 
-import diary.entity.Diary;
+import chungha.diarycommon.entity.Diary;
 import diary.model.DiaryRequest;
-import diary.repository.DiaryRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class DiaryService {
-    private final DiaryRepository diaryRepository;
+
+    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass().getSimpleName());
+    private final MongoTemplate mongoTemplate;
 
     public void createDiary(DiaryRequest req) {
         Diary diary = Diary.builder()
@@ -18,7 +21,8 @@ public class DiaryService {
                 .emotion(req.emotion())
                 .feedback(req.feedback())
                 .build();
-        System.out.println(diary);
+
+        logger.info(diary.toString());
         diaryRepository.save(diary);
     }
 }
