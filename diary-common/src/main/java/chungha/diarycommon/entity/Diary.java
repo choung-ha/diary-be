@@ -1,6 +1,7 @@
 package chungha.diarycommon.entity;
 
 import chungha.diarycommon.model.Emotion;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,6 +30,9 @@ public class Diary {
     private Emotion emotion;
 
     // 피드백 json
-    private Map<String, Object> feedback;
+    private List<Map<String, Object>> feedback;
+
+    // 사용자 id
+    private String userId;
 
 }
