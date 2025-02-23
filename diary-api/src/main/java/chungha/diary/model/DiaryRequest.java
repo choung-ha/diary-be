@@ -1,6 +1,7 @@
-package diary.model;
+package chungha.diary.model;
 
 import chungha.diarycommon.model.Emotion;
+import java.util.List;
 import java.util.Map;
 
 public record DiaryRequest(
@@ -8,5 +9,5 @@ public record DiaryRequest(
     String title,
     String content,
     Emotion emotion,
-    Map<String, Object> feedback
+    String feedback
 ) {}

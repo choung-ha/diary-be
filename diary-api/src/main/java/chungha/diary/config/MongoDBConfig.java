@@ -1,4 +1,4 @@
-package chungha.diarycommon.config;
+package chungha.diary.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

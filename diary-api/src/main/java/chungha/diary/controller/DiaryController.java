@@ -1,7 +1,7 @@
-package diary.controller;
+package chungha.diary.controller;
 
-import diary.model.DiaryRequest;
-import diary.service.DiaryService;
+import chungha.diary.model.DiaryRequest;
+import chungha.diary.service.DiaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
