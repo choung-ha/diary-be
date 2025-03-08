@@ -1,14 +1,16 @@
 package chungha.diarycommon.entity;
 
-import chungha.diarycommon.model.Emotion;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import chungha.diarycommon.model.Emotion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "diary")
 @Getter
@@ -16,22 +18,22 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Builder
 public class Diary extends BaseEntity {
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    // 제목
-    private String title;
+	// 제목
+	private String title;
 
-    // 일기 내용 (500자)
-    private String content;
+	// 일기 내용 (500자)
+	private String content;
 
-    // 감정 (Enum)
-    private Emotion emotion;
+	// 감정 (Enum)
+	private Emotion emotion;
 
-    // 피드백 json
-    private List<Map<String, Object>> feedback;
+	// 피드백 json
+	private List<Map<String, Object>> feedback;
 
-    // 사용자 id
-    private String userId;
+	// 사용자 id
+	private String userId;
 
 }
