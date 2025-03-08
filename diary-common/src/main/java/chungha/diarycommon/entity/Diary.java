@@ -2,6 +2,7 @@ package chungha.diarycommon.entity;
 
 import chungha.diarycommon.model.Emotion;
 import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,14 +10,12 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Map;
-
 @Document(collection = "diary")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Diary {
+public class Diary extends BaseEntity {
     @Id
     private String id;
 
