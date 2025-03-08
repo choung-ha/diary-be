@@ -1,10 +1,8 @@
-package chungha.diary.model;
+package chungha.diary.model.request;
 
 import chungha.diarycommon.model.Emotion;
-import java.util.List;
-import java.util.Map;
 
-public record DiaryRequest(
+public record DiaryCreateReq(
     String userId, // 회원 기능이 아직 없어서 임시로 추가
     String title,
     String content,
