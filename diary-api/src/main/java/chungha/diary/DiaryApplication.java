@@ -1,10 +1,10 @@
-package diary;
+package chungha.diary;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"chungha"})
 @EnableAsync
 public class DiaryApplication {
 	public static void main(String[] args) {
