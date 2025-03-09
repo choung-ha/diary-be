@@ -21,16 +21,28 @@ import reactor.core.publisher.Mono;
 public class LlmApiRepository {
 	private final ReactiveMongoTemplate reactiveMongoTemplate;
 
-	Mono<Diary> findBy(String diaryId, String userId) {
-		Query query = new Query(Criteria.where("_id").is(diaryId).and("userId").is(userId));
-		return reactiveMongoTemplate.findOne(query, Diary.class);
+	Mono<Diary> reserveDiaryUpdate(String diaryId, String userId) {
+		Query query = new Query(
+			Criteria.where("_id")
+				.is(diaryId)
+				.and("userId").is(userId)
+				.and("feedback").isNull()
+				.and("changes").isNull()
+				.and("pending").isNull());
+		Update update = new Update().set("pending", true);
+		FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true);
+		return reactiveMongoTemplate.findAndModify(query, update, options, Diary.class);
 	}
 
-	public Mono<Diary> updateFeedbackAndChanges(String diaryId, String feedback, List<Change> changes) {
-		Query query = new Query(Criteria.where("_id").is(diaryId));
-		Update updateQuery = new Update().set("feedback", feedback)
+	Mono<Diary> updateFeedbackAndChanges(String diaryId, String feedback, List<Change> changes) {
+		Query query = new Query(Criteria.where("_id").is(diaryId)
+			.and("pending").is(true));
+
+		Update updateQuery = new Update()
+			.set("feedback", feedback)
 			.set("changes", changes)
-			.set("updated_at", LocalDateTime.now(ZoneOffset.UTC));
+			.set("updated_at", LocalDateTime.now(ZoneOffset.UTC))
+			.set("pending", Boolean.FALSE);
 
 		FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true);
 

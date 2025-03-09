@@ -3,7 +3,7 @@ POST http://localhost:8091/llm-feedback
 Content-Type: application/json
 
 {
-  "userId": "haeun01-20250308",
-  "diaryId": "67cbfa0e3865db0a6c7c42f8",
-  "content": "My day followed the usual pattern—coding in the morning, exercising in the afternoon, and reading in the evening. Nothing unexpected happened, but I felt productive. Sometimes, having a stable routine is comforting. I don’t always need surprises to feel satisfied."
+  "diaryId": "67c451b62dc70a66eb4bcd3b",
+  "userId": "haeun-250302",
+  "content": "Well, it rained today. I thought that rain won't be heavy, but it looks like a little bit heavly rained. Anyway, I met people who studied together for 3 months with same book. The book was quitely difficult so we joined together to celebrate ourselves. Actually, it has been quite a while for me to meet new people so it was very freshing. It's a bit shame that there won't be any reason for us to meet again. Anyway I'm a bit tired.. I don't know why!"
 }

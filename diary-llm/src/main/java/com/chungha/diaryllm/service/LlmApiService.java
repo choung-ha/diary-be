@@ -3,6 +3,7 @@ package com.chungha.diaryllm.service;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
 import org.springframework.ai.openai.OpenAiChatModel;
@@ -27,7 +28,18 @@ public class LlmApiService {
 	private static final String PREFIX_MESSAGE = "당신은 본문 속 영어 문장들을 보다 더 나은 영어 문장으로 바꾸는 일을 담당합니다. 대답은 무슨 일이 있어도 다음 형식으로 하세요. {\"message\": \"당신이 바꾼 글\"} \n입력 문장 : ";
 
 	public Mono<Diary> createFeedBackAndSave(FeedbackReq req) {
-		return callLlmApi(req.content()).flatMap(this::parseFeedback).flatMap(feedback -> saveFeedBack(req, feedback));
+		return llmApiRepository.reserveDiaryUpdate(req.diaryId(), req.userId())
+			.switchIfEmpty(Mono.error(new RuntimeException("피드백 업데이트 중인 일기입니다")))
+			.flatMap(diary -> {
+				if (!Objects.isNull(diary.getFeedback())) {
+					return Mono.error(new RuntimeException("이미 피드백이 반영된 일기입니다"));
+				} else if (!Objects.equals(diary.getUserId(), req.userId())) {
+					return Mono.error(new RuntimeException("적절한 사용자가 아닙니다."));
+				}
+				return Mono.just(diary);
+			})
+			.flatMap(diary -> callLlmApi(diary.getContent()).flatMap(this::parseFeedback)
+				.flatMap(feedback -> saveFeedBackAfterReservation(diary, feedback)));
 	}
 
 	private Mono<String> callLlmApi(String content) {
@@ -42,17 +54,10 @@ public class LlmApiService {
 		}).subscribeOn(Schedulers.boundedElastic());
 	}
 
-	private Mono<Diary> saveFeedBack(FeedbackReq req, String feedback) {
-		return findBy(req.diaryId(), req.userId())
-			.flatMap(diary -> {
-				List<Change> changes = calculateDiff(diary.getContent(), feedback);
-				return llmApiRepository.updateFeedbackAndChanges(diary.getId(), feedback, changes);
-			});
-	}
-
-	private Mono<Diary> findBy(String diaryId, String userId) {
-		return llmApiRepository.findBy(diaryId, userId)
-			.switchIfEmpty(Mono.error(new RuntimeException("userId가 일치하지 않음")));
+	private Mono<Diary> saveFeedBackAfterReservation(Diary diary, String feedback) {
+		List<Change> changes = calculateDiff(diary.getContent(), feedback);
+		return llmApiRepository.updateFeedbackAndChanges(diary.getId(), feedback, changes)
+			.switchIfEmpty(Mono.error(new RuntimeException("조건에 맞는 일기가 없습니다")));
 	}
 
 	// 변경 지점을 계산하고 변경된 내용을 반환한다
