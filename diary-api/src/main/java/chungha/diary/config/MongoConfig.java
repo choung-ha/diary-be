@@ -11,16 +11,16 @@ import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 @Configuration
 @EnableMongoAuditing
 public class MongoConfig {
-    @Value("${spring.data.mongodb.uri}")
-    private String connectionString;
+	@Value("${spring.data.mongodb.uri}")
+	private String connectionString;
 
-    @Bean
-    public MongoDatabaseFactory mongoDatabaseFactory() {
-        return new SimpleMongoClientDatabaseFactory(connectionString);
-    }
+	@Bean
+	public MongoDatabaseFactory mongoDatabaseFactory() {
+		return new SimpleMongoClientDatabaseFactory(connectionString);
+	}
 
-    @Bean
-    public MongoTemplate mongoTemplate() {
-        return new MongoTemplate(mongoDatabaseFactory());
-    }
+	@Bean
+	public MongoTemplate mongoTemplate() {
+		return new MongoTemplate(mongoDatabaseFactory());
+	}
 }

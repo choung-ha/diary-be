@@ -1,8 +1,5 @@
 package chungha.diarycommon.entity;
 
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -31,7 +28,9 @@ public class Diary extends BaseEntity {
 	private Emotion emotion;
 
 	// 피드백 json
-	private List<Map<String, Object>> feedback;
+	// private List<Map<String, Object>> feedback;
+
+	private String feedback;
 
 	// 사용자 id
 	private String userId;

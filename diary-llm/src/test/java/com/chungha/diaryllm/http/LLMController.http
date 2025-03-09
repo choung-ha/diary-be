@@ -3,5 +3,6 @@ POST http://localhost:8091/llm-feedback
 Content-Type: application/json
 
 {
+  "diaryId": "67cbfa0e3865db0a6c7c42f8",
   "content": "i love starbucks. There has nice coffee so i love study in that place. actually i didn't spend money to buy a cup of coffee in startbuck cause i felt to expensive bought coffee in there but now, i work and make money so i feel not expensive"
 }
