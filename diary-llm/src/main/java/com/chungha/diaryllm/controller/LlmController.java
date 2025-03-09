@@ -18,7 +18,7 @@ public class LlmController {
 
 	@PostMapping("/llm-feedback")
 	public Mono<ResponseEntity<?>> createFeedback(@RequestBody FeedbackReq req) {
-		return llmApiService.createFeedback(req)
+		return llmApiService.createFeedBackAndSave(req)
 			.map(ResponseEntity::ok);
 	}
 }

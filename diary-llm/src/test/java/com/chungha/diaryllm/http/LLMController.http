@@ -3,6 +3,7 @@ POST http://localhost:8091/llm-feedback
 Content-Type: application/json
 
 {
+  "userId": "haeun01-20250308",
   "diaryId": "67cbfa0e3865db0a6c7c42f8",
-  "content": "i love starbucks. There has nice coffee so i love study in that place. actually i didn't spend money to buy a cup of coffee in startbuck cause i felt to expensive bought coffee in there but now, i work and make money so i feel not expensive"
+  "content": "My day followed the usual pattern—coding in the morning, exercising in the afternoon, and reading in the evening. Nothing unexpected happened, but I felt productive. Sometimes, having a stable routine is comforting. I don’t always need surprises to feel satisfied."
 }
