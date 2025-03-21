@@ -1,6 +1,4 @@
 package chungha.diary.model.request;
 
-public record DiaryDeleteReq(
-	String diaryId
-) {
+public record DiaryDeleteReq(String diaryId) {
 }
