@@ -12,9 +12,8 @@ public class MongoIdValidator implements ConstraintValidator<ValidMongoId, Strin
 
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
-		// null 값은 별도의 @NotNull 어노테이션으로 처리하는 것이 좋습니다.
 		if (value == null) {
-			return true;
+			return false;
 		}
 		return OBJECT_ID_PATTERN.matcher(value).matches();
 	}
