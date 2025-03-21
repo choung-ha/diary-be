@@ -21,7 +21,7 @@ public class Diary extends BaseEntity {
 	@Id
 	private String id;
 
-	// 제목
+	// 제목 (50자)
 	private String title;
 
 	// 일기 내용 (500자)
