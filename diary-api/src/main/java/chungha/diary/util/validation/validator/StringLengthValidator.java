@@ -16,8 +16,8 @@ public class StringLengthValidator implements ConstraintValidator<ValidStringLen
 
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
-		if (value == null) {  // null은 다른 어노테이션(@NotNull 등)으로 처리하도록, 여기서는 유효하다고 간주
-			return true;
+		if (value == null) {
+			return false;
 		}
 		// 코드 포인트 수를 기준으로 글자 수를 측정 (공백 포함)
 		int actualLength = value.codePointCount(0, value.length());
