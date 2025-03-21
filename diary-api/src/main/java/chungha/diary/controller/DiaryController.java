@@ -1,6 +1,6 @@
 package chungha.diary.controller;
 
-import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,9 +35,11 @@ public class DiaryController {
 
 	@GetMapping()
 	@ResponseStatus(HttpStatus.OK)
-	public Page<Diary> getAllDiary(@RequestParam(defaultValue = "1") int page,
+	public PagedModel<Diary> getAllDiary(
+		@RequestParam String userId,
+		@RequestParam(defaultValue = "1") int page,
 		@RequestParam(defaultValue = "5") int pageSize) {
-		return diaryService.getAllDiary(page, pageSize);
+		return diaryService.getAllDiary(userId, page, pageSize);
 	}
 
 	@GetMapping("/{diaryId}")

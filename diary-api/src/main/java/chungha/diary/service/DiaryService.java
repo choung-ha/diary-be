@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import chungha.diary.model.request.DiaryCreateReq;
@@ -35,10 +35,9 @@ public class DiaryService {
 		diaryRepository.saveDiary(diary);
 	}
 
-	public Page<Diary> getAllDiary(int page, int pageSize) {
+	public PagedModel<Diary> getAllDiary(String userId, int page, int pageSize) {
 		Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "created_at"));
-
-		return diaryRepository.getAllDiary(pageable);
+		return diaryRepository.getAllDiary(userId, pageable);
 	}
 
 	public Diary getDiaryById(String diaryId) {

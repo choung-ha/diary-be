@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Repository;
 
 import chungha.diary.model.request.DiaryUpdateReq;
@@ -26,10 +27,17 @@ public class DiaryRepository {
 		mongoTemplate.save(diary);
 	}
 
-	public Page<Diary> getAllDiary(Pageable pageable) {
-		Query query = new Query().with(pageable);
+	public PagedModel<Diary> getAllDiary(String userId, Pageable pageable) {
+		Criteria userCriteria = Criteria.where("userId").is(userId);
+		Query query = new Query(userCriteria).with(pageable);
+		// pageable과 같이쓰면 제대로 안나온다. totalCount가 page * pageSize 값으로 나옴
+		Query countQuery = new Query(userCriteria);
+
 		List<Diary> diaryList = mongoTemplate.find(query, Diary.class);
-		return PageableExecutionUtils.getPage(diaryList, pageable, () -> mongoTemplate.count(query, Diary.class));
+		Page<Diary> diaryPage = PageableExecutionUtils.getPage(diaryList, pageable,
+			() -> mongoTemplate.count(countQuery, Diary.class));
+
+		return new PagedModel<>(diaryPage);
 	}
 
 	public Optional<Diary> getDiaryById(String diaryId) {
