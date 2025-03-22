@@ -1,0 +1,4 @@
+spring:
+  ai:
+    openai:
+      base-url: ${MOCK_API_URL}
