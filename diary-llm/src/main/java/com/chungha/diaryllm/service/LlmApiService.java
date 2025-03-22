@@ -33,8 +33,6 @@ public class LlmApiService {
 			.flatMap(diary -> {
 				if (!Objects.isNull(diary.getFeedback())) {
 					return Mono.error(new RuntimeException("이미 피드백이 반영된 일기입니다"));
-				} else if (!Objects.equals(diary.getUserId(), req.userId())) {
-					return Mono.error(new RuntimeException("적절한 사용자가 아닙니다."));
 				}
 				return Mono.just(diary);
 			})
