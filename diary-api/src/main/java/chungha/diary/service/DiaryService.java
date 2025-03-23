@@ -1,18 +1,15 @@
 package chungha.diary.service;
 
-import java.util.ArrayList;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import chungha.diary.model.request.DiaryCreateReq;
 import chungha.diary.model.request.DiaryDeleteReq;
 import chungha.diary.model.request.DiaryUpdateReq;
+import chungha.diary.model.response.DiaryRes;
 import chungha.diary.repository.DiaryRepository;
 import chungha.diarycommon.entity.Diary;
 import chungha.diarycommon.exception.CommonErrorCode;
@@ -37,7 +34,6 @@ public class DiaryService {
 			.content(req.content())
 			.emotion(req.emotion())
 			.userId(req.userId())
-			.feedback(new ArrayList<>())
 			.build();
 		diaryRepository.saveDiary(diary);
 	}
@@ -45,13 +41,11 @@ public class DiaryService {
 	/**
 	 * 사용자가 작성한 일기를 최근 생성 기준으로 정렬해서 페이지네이션으로 반환한다.
 	 * @param userId 사용자
-	 * @param page 페이지 번호
-	 * @param pageSize 페이지 크기
+	 * @param pageable 페이지 요청 정보
 	 * @return 일기 목록
 	 */
-	public PagedModel<Diary> getAllDiary(String userId, int page, int pageSize) {
-		Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "created_at"));
-		return diaryRepository.getAllDiary(userId, pageable);
+	public Page<DiaryRes> getAllDiary(String userId, Pageable pageable) {
+		return diaryRepository.getAllDiary(userId, pageable).map(DiaryRes::from);
 	}
 
 	public Diary getDiaryById(String diaryId) {

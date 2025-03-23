@@ -1,6 +1,11 @@
 package chungha.diary.controller;
 
-import org.springframework.data.web.PagedModel;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import chungha.diary.model.request.DiaryCreateReq;
 import chungha.diary.model.request.DiaryDeleteReq;
 import chungha.diary.model.request.DiaryUpdateReq;
+import chungha.diary.model.response.DiaryRes;
 import chungha.diary.service.DiaryService;
 import chungha.diary.util.validation.annotation.ValidMongoId;
 import chungha.diarycommon.entity.Diary;
@@ -39,11 +45,11 @@ public class DiaryController {
 
 	@GetMapping()
 	@ResponseStatus(HttpStatus.OK)
-	public PagedModel<Diary> getAllDiary(
+	public PagedModel<EntityModel<DiaryRes>> getAllDiary(
 		@RequestParam @ValidMongoId String userId,
-		@RequestParam(defaultValue = "1") int page,
-		@RequestParam(defaultValue = "5") int pageSize) {
-		return diaryService.getAllDiary(userId, page, pageSize);
+		@PageableDefault(sort = "created_at", direction = Sort.Direction.DESC) Pageable pageable,
+		PagedResourcesAssembler<DiaryRes> assembler) {
+		return assembler.toModel(diaryService.getAllDiary(userId, pageable));
 	}
 
 	@GetMapping("/{diaryId}")
