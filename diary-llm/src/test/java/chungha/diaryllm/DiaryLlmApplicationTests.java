@@ -1,4 +1,4 @@
-package com.chungha.diaryllm;
+package chungha.diaryllm;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

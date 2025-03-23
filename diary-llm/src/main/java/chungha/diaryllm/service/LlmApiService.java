@@ -1,4 +1,4 @@
-package com.chungha.diaryllm.service;
+package chungha.diaryllm.service;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -9,8 +9,8 @@ import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.stereotype.Service;
 
-import com.chungha.diaryllm.model.request.FeedbackReq;
-import com.chungha.diaryllm.model.response.FeedbackRes;
+import chungha.diaryllm.model.request.FeedbackReq;
+import chungha.diaryllm.model.response.FeedbackRes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import chungha.diarycommon.entity.Change;

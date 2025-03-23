@@ -1,4 +1,4 @@
-package com.chungha.diaryllm.config;
+package chungha.diaryllm.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

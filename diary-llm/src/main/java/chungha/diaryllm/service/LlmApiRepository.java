@@ -1,4 +1,4 @@
-package com.chungha.diaryllm.service;
+package chungha.diaryllm.service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
