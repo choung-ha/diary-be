@@ -1,0 +1,35 @@
+management:
+  endpoints:
+    access:
+      default: none # 모든 actuator 접근 비활성화
+    web:
+      exposure:
+        include: health, info, metrics, threaddump
+    jmx:
+      exposure:
+        include: health, info, metrics, threaddump
+  stackdriver:
+    metrics:
+      export:
+        enabled: true
+        project-id: ${GCP_PROJECT_ID}
+  server:
+    port: ${ACTUATOR_PORT}
+spring:
+  application:
+    name: diary
+  profiles:
+    active: ${SPRING_ACTIVE_PROFILE}
+
+  data:
+    mongodb:
+      uri: ${DIARY_ATLAS_MONGODB}
+
+  ai:
+    openai:
+      api-key: ${DIARY_OPEN_API_KEY}
+      chat:
+        options:
+          model: gpt-3.5-turbo
+server:
+  port: ${SERVER_PORT}
