@@ -1,5 +1,6 @@
 package chungha.diary.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,10 +27,15 @@ public class DiaryRepository {
 		mongoTemplate.save(diary);
 	}
 
-	public Page<Diary> getAllDiary(Pageable pageable) {
-		Query query = new Query().with(pageable);
+	public Page<Diary> getAllDiary(String userId, Pageable pageable) {
+		Criteria userCriteria = Criteria.where("userId").is(userId);
+		Query query = new Query(userCriteria).with(pageable);
+		// pageable과 같이쓰면 제대로 안나온다. totalCount가 page * pageSize 값으로 나옴
+		Query countQuery = new Query(userCriteria);
+
 		List<Diary> diaryList = mongoTemplate.find(query, Diary.class);
-		return PageableExecutionUtils.getPage(diaryList, pageable, () -> mongoTemplate.count(query, Diary.class));
+		return PageableExecutionUtils.getPage(diaryList, pageable,
+			() -> mongoTemplate.count(countQuery, Diary.class));
 	}
 
 	public Optional<Diary> getDiaryById(String diaryId) {
@@ -38,7 +44,7 @@ public class DiaryRepository {
 
 	public Diary updateDiary(DiaryUpdateReq req) {
 		Query query = new Query(Criteria.where("_id").is(req.diaryId()));
-		Update update = new Update();
+		Update update = new Update().set("updatedAt", LocalDateTime.now());
 
 		if (req.title() != null && !req.title().isEmpty()) {
 			update.set("title", req.title());

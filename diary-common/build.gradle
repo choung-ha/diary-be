@@ -23,6 +23,7 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.16.1'
 	implementation 'com.fasterxml.jackson.core:jackson-core:2.16.1'
 	implementation 'org.projectlombok:lombok'
+	implementation 'org.springframework:spring-web'
 	annotationProcessor 'org.projectlombok:lombok'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
