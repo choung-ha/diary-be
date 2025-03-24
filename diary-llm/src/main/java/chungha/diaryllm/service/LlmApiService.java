@@ -14,6 +14,7 @@ import chungha.diarycommon.entity.Diary;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import reactor.util.retry.Retry;
 
 @Service
 @RequiredArgsConstructor
@@ -43,22 +44,30 @@ public class LlmApiService {
 		return llmApiRepository.reserveDiaryUpdate(req.diaryId(), req.userId())
 			.switchIfEmpty(Mono.error(new RuntimeException("일기를 찾을 수 없거나 권한이 없습니다.")))
 			.flatMap(diary -> {
-				if (!Objects.isNull(diary.getImprovedContent())) {
+				if (diary.getImprovedContent() != null) {
 					return Mono.error(new RuntimeException("이미 피드백이 반영된 일기입니다"));
 				}
 				if (Boolean.TRUE.equals(diary.getPending())) {
 					return Mono.error(new RuntimeException("피드백 업데이트 중인 일기입니다."));
 				}
-				return Mono.just(diary);
-			})
-			.flatMap(diary -> callLlmApi(diary.getContent())
-				.flatMap(this::parseFeedback)
-				.flatMap(parsed -> saveFeedBackAfterReservation(diary, parsed)));
+				return callLlmApi(diary.getContent())
+					.flatMap(this::parseFeedback)
+					.flatMap(parsed -> saveFeedBackAfterReservation(diary, parsed))
+					.onErrorResume(ex ->
+						llmApiRepository.setPendingFalse(diary.getId())
+							.then(Mono.error(ex)));
+			});
 	}
 
 	private Mono<String> callLlmApi(String content) {
 		String prompt = PREFIX_MESSAGE + content;
-		return Mono.fromCallable(() -> openAiChatModel.call(prompt)).subscribeOn(Schedulers.boundedElastic());
+		return Mono.fromCallable(() -> openAiChatModel.call(prompt)).subscribeOn(Schedulers.boundedElastic())
+			.retryWhen(
+				Retry.max(3)
+					.filter(throwable -> throwable instanceof RuntimeException)
+					.onRetryExhaustedThrow(((retrySpec, retrySignal) ->
+						new RuntimeException("LLM 호출에 실패했습니다.", retrySignal.failure())))
+			);
 	}
 
 	private Mono<FeedbackRes> parseFeedback(String feedbackJson) {

@@ -38,7 +38,7 @@ public class LlmApiServiceTest {
 	private LlmApiService llmApiService;
 
 	@Test
-	@DisplayName("다이어리를 찾을 수 없다면 피드백을 생성할 수 없습니다.")
+	@DisplayName("일기를 찾을 수 없다면 피드백을 생성할 수 없습니다.")
 	void createFeedback_diaryNotFound() {
 		String diaryId = UUID.randomUUID().toString();
 		String userid = "testuser";

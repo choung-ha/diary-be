@@ -1,6 +1,8 @@
 package chungha.diary.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +32,6 @@ public class DiaryService {
 			.content(req.content())
 			.emotion(req.emotion())
 			.userId(req.userId())
-			.feedback(new ArrayList<>())
 			.build();
 		diaryRepository.saveDiary(diary);
 	}

@@ -47,4 +47,12 @@ public class LlmApiRepository {
 
 		return reactiveMongoTemplate.findAndModify(query, updateQuery, options, Diary.class);
 	}
+
+	Mono<Diary> setPendingFalse(String diaryId) {
+		Query query = new Query(Criteria.where("_id").is(diaryId));
+		Update update = new Update().set("pending", false);
+		FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true);
+
+		return reactiveMongoTemplate.findAndModify(query, update, options, Diary.class);
+	}
 }
