@@ -32,6 +32,7 @@ public class DiaryService {
 			.content(req.content())
 			.emotion(req.emotion())
 			.userId(req.userId())
+			.pending(false)
 			.build();
 		diaryRepository.saveDiary(diary);
 	}
