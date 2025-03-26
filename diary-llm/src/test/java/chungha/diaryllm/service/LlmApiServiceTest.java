@@ -87,18 +87,13 @@ public class LlmApiServiceTest {
 		String content = "Today is poem poem";
 		FeedbackReq req = new FeedbackReq(userid, diaryId, content);
 
-		Diary pendingDiary = Diary.builder()
-			.id(diaryId)
-			.userId(userid)
-			.pending(true)
-			.build();
-
-		when(llmApiRepository.reserveDiaryUpdate(diaryId, userid)).thenReturn(Mono.just(pendingDiary));
+		// 이미 요청 한 일기이기에 빈 객체만 나옴
+		when(llmApiRepository.reserveDiaryUpdate(diaryId, userid)).thenReturn(Mono.empty());
 
 		Mono<Diary> result = llmApiService.createFeedBackAndSave(req);
 
 		StepVerifier.create(result)
-			.expectErrorMessage("피드백 업데이트 중인 일기입니다.")
+			.expectErrorMessage("일기를 찾을 수 없거나 권한이 없습니다.")
 			.verify();
 	}
 
@@ -153,6 +148,37 @@ public class LlmApiServiceTest {
 		StepVerifier.create(result)
 			.expectNext(updateDiary)
 			.verifyComplete();
+	}
+
+	@Test
+	@DisplayName("Json parse 실패해서 피드백 생성에 실패한다")
+	void llmRetryAndPendingFalseOnFailure() throws Exception {
+		String diaryId = "diary123";
+		String userId = "user1";
+		String content = "Today is poem poem";
+		Diary diary = Diary.builder()
+			.id(diaryId)
+			.userId(userId)
+			.content(content)
+			.pending(true)
+			.build();
+
+		when(llmApiRepository.reserveDiaryUpdate(diaryId, userId)).thenReturn(Mono.just(diary));
+
+		// openAiChatModel.call 3번 모두 실패
+		when(openAiChatModel.call(anyString())).thenThrow(new RuntimeException("LLM error"));
+
+		Diary pendingOffDiary = Diary.builder().id(diaryId).userId(userId).pending(false).build();
+		when(llmApiRepository.setPending(diaryId, false)).thenReturn(Mono.just(pendingOffDiary));
+
+		Mono<Diary> result = llmApiService.createFeedBackAndSave(new FeedbackReq(userId, diaryId, content));
+
+		StepVerifier.create(result)
+			.expectErrorMessage("LLM 호출에 실패했습니다.")
+			.verify();
+
+		verify(openAiChatModel, times(4)).call(anyString());
+		verify(llmApiRepository, times(1)).setPending(diaryId, false);
 	}
 
 }
