@@ -1,4 +1,7 @@
 package chungha.diary.model.request;
 
-public record DiaryDeleteReq(String diaryId) {
-}
+import chungha.diary.util.validation.annotation.ValidMongoId;
+
+public record DiaryDeleteReq(
+	@ValidMongoId String diaryId) 
+{}
