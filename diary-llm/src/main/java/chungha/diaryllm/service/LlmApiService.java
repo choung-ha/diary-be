@@ -29,10 +29,15 @@ public class LlmApiService {
 		각 문장을 어떻게 바꾸었는지(그리고 그 이유)까지 설명해 줄 책임이 있습니다.
 	
 		반드시 무슨 일이 있어도 다음 JSON 형식으로만 답변을 작성하세요. 다른 문구는 일절 넣지 않습니다.
+		improvedContent에는 value에는 당신이 개선해서 바꾼 글
+		feedback의 key에는 당신이 교정한 문장을 value에는 무엇을 어떻게 바꿨는지, 그리고 그 이유를 적어줘
+		
 		{
-		  "content": "당신이 개선한 전체 글",
+		  "improvedContent": "value",
 		  "feedback": {
-			"교정 후 문장": "무엇을 어떻게 바꿨는지, 그리고 그 이유"
+			"key": "value",
+			"key": "value",
+			...
 		  }
 		}
 	
@@ -47,14 +52,11 @@ public class LlmApiService {
 				if (diary.getImprovedContent() != null) {
 					return Mono.error(new RuntimeException("이미 피드백이 반영된 일기입니다"));
 				}
-				if (Boolean.TRUE.equals(diary.getPending())) {
-					return Mono.error(new RuntimeException("피드백 업데이트 중인 일기입니다."));
-				}
 				return callLlmApi(diary.getContent())
 					.flatMap(this::parseFeedback)
 					.flatMap(parsed -> saveFeedBackAfterReservation(diary, parsed))
 					.onErrorResume(ex ->
-						llmApiRepository.setPendingFalse(diary.getId())
+						llmApiRepository.setPending(diary.getId(), false)
 							.then(Mono.error(ex)));
 			});
 	}
