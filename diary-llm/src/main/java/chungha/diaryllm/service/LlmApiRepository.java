@@ -24,7 +24,10 @@ public class LlmApiRepository {
 		Query query = new Query(
 			Criteria.where("_id")
 				.is(diaryId)
-				.and("userId").is(userId));
+				.and("userId")
+				.is(userId)
+				.and("pending").ne(true));
+
 		Update update = new Update().set("pending", true);
 		FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true);
 		return reactiveMongoTemplate.findAndModify(query, update, options, Diary.class);
@@ -40,17 +43,16 @@ public class LlmApiRepository {
 		Update updateQuery = new Update()
 			.set("improved_content", improvedContent)
 			.set("feedback", feedbackMap)
-			.set("updated_at", LocalDateTime.now(ZoneOffset.UTC))
-			.set("pending", Boolean.FALSE);
+			.set("updated_at", LocalDateTime.now(ZoneOffset.UTC));
 
 		FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true);
 
 		return reactiveMongoTemplate.findAndModify(query, updateQuery, options, Diary.class);
 	}
 
-	Mono<Diary> setPendingFalse(String diaryId) {
+	Mono<Diary> setPending(String diaryId, boolean pending) {
 		Query query = new Query(Criteria.where("_id").is(diaryId));
-		Update update = new Update().set("pending", false);
+		Update update = new Update().set("pending", pending);
 		FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true);
 
 		return reactiveMongoTemplate.findAndModify(query, update, options, Diary.class);
