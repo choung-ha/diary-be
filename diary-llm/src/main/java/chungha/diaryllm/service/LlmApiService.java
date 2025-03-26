@@ -1,7 +1,7 @@
 package chungha.diaryllm.service;
 
 import java.util.Map;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.stereotype.Service;
@@ -79,8 +79,19 @@ public class LlmApiService {
 
 	private Mono<Diary> saveFeedBackAfterReservation(Diary diary, FeedbackRes feedback) {
 		String improvedContent = feedback.improvedContent();
-		Map<String, String> feedbackMap = feedback.feedback();
-		return llmApiRepository.updateFeedbackAndChanges(diary.getId(), improvedContent, feedbackMap)
+		Map<String, String> sanitizeMap = sanitizeFeedback(feedback.feedback());
+		return llmApiRepository.updateFeedbackAndChanges(diary.getId(), improvedContent, sanitizeMap)
 			.switchIfEmpty(Mono.error(new RuntimeException("조건에 맞는 일기가 없습니다")));
+	}
+
+
+	private Map<String, String> sanitizeFeedback(Map<String, String> feedbackMap) {
+		if (feedbackMap == null) return null;
+		return feedbackMap.entrySet().stream()
+			.collect(Collectors.toMap(entry -> makeMongoKeySafe(entry.getKey()), Map.Entry::getValue));
+	}
+
+	private String makeMongoKeySafe(String key) {
+		return key.replaceAll("\\.", "").replaceAll("\\$", "");
 	}
 }
