@@ -3,6 +3,7 @@ package chungha.diaryllm.service;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -152,7 +153,7 @@ public class LlmApiServiceTest {
 
 	@Test
 	@DisplayName("Json parse 실패해서 피드백 생성에 실패한다")
-	void llmRetryAndPendingFalseOnFailure() throws Exception {
+	void llmRetryAndPendingFalseOnFailure() {
 		String diaryId = "diary123";
 		String userId = "user1";
 		String content = "Today is poem poem";
@@ -181,4 +182,70 @@ public class LlmApiServiceTest {
 		verify(llmApiRepository, times(1)).setPending(diaryId, false);
 	}
 
+	@Test
+	@DisplayName("피드백 key에 '.'와 '$'가 있어도 빈 값으로 치환되어 저장된다")
+	void feedbackKeySanitizeTest() throws Exception {
+		// given
+		String diaryId = "diary123";
+		String userId = "user1";
+		String content = "Today is poem poem";
+
+		Diary diary = Diary.builder()
+			.id(diaryId)
+			.userId(userId)
+			.content(content)
+			.pending(false)
+			.build();
+		when(llmApiRepository.reserveDiaryUpdate(diaryId, userId))
+			.thenReturn(Mono.just(diary));
+
+		String gptResponseJson = "{\"improvedContent\": \"Better poem\",\"feedback\":{\".bad.key\":\"value1\",\"$anotherKey\":\"value2\"}}";
+		when(openAiChatModel.call(anyString())).thenReturn(gptResponseJson);
+
+		FeedbackRes feedbackRes = new FeedbackRes(
+			"Better poem",
+			Map.of(".bad.key", "value1", "$anotherKey", "value2")
+		);
+		when(objectMapper.readValue(gptResponseJson, FeedbackRes.class)).thenReturn(feedbackRes);
+
+		when(llmApiRepository.updateFeedbackAndChanges(
+			eq(diaryId),
+			eq("Better poem"),
+			anyMap()
+		)).thenAnswer(invocation -> {
+			String argDiaryId = invocation.getArgument(0);
+			String improved = invocation.getArgument(1);
+			Map<String, String> sanitizedMap = invocation.getArgument(2);
+
+			assertTrue(sanitizedMap.containsKey("badkey")); // .bad.key -> badkey
+			assertTrue(sanitizedMap.containsKey("anotherKey")); // $anotherKey -> anotherKey
+			assertEquals("value1", sanitizedMap.get("badkey"));
+			assertEquals("value2", sanitizedMap.get("anotherKey"));
+
+			return Mono.just(
+				Diary.builder()
+					.id(argDiaryId)
+					.userId(userId)
+					.content(content)
+					.improvedContent(improved)
+					.feedback(sanitizedMap)
+					.build()
+			);
+		});
+
+		Mono<Diary> result = llmApiService.createFeedBackAndSave(
+			new FeedbackReq(userId, diaryId, content)
+		);
+
+		StepVerifier.create(result)
+			.assertNext(updatedDiary -> {
+				assertEquals("Better poem", updatedDiary.getImprovedContent());
+				Map<String, String> fb = updatedDiary.getFeedback();
+				assertTrue(fb.containsKey("badkey"));
+				assertTrue(fb.containsKey("anotherKey"));
+				assertFalse(fb.containsKey(".bad.key"));
+				assertFalse(fb.containsKey("$anotherKey"));
+			})
+			.verifyComplete();
+	}
 }
