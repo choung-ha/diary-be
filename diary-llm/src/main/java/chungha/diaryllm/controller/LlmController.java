@@ -1,12 +1,12 @@
-package com.chungha.diaryllm.controller;
+package chungha.diaryllm.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.chungha.diaryllm.model.request.FeedbackReq;
-import com.chungha.diaryllm.service.LlmApiService;
+import chungha.diaryllm.model.request.FeedbackReq;
+import chungha.diaryllm.service.LlmApiService;
 
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;

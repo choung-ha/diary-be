@@ -1,4 +1,4 @@
-package com.chungha.diaryllm;
+package chungha.diaryllm;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,9 +1,10 @@
 package chungha.diarycommon.entity;
 
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import chungha.diarycommon.model.Emotion;
 import lombok.AllArgsConstructor;
@@ -30,15 +31,16 @@ public class Diary extends BaseEntity {
 	private Emotion emotion;
 
 	// 피드백
-	private String feedback;
+	@Field("improved_content")
+	private String improvedContent;
 
-	// 변경된 부분
-	private List<Change> changes;
+	// LLM이 제공한 문장별 수정 이유 (key: 문장/구문, value: 수정 이유)
+	private Map<String, String> feedback;
+
 
 	// 사용자 id
 	private String userId;
 
 	// 예약 플래그
 	private Boolean pending;
-
 }

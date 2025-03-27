@@ -1,4 +1,4 @@
-package com.chungha.diaryllm.model.request;
+package chungha.diaryllm.model.request;
 
 public record FeedbackReq(
 	String userId,

@@ -19,34 +19,31 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter:1.0.0-SNAPSHOT'
-
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
-
-    // for monitoring
-    // Spring Boot Actuator: 애플리케이션 모니터링 및 상태 정보 제공
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-
-    // GCP Cloud Monitoring으로 메트릭 전송
-    implementation 'io.micrometer:micrometer-registry-stackdriver'
-    implementation 'com.google.protobuf:protobuf-java:4.28.2'
-
-    implementation 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-
-    implementation 'org.apache.httpcomponents.client5:httpclient5'
-
-    // common
-    implementation project(':diary-common')
-
-    // diff diary and feedback
-    implementation 'org.bitbucket.cowwoc:diff-match-patch:1.2'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+// mac 사용 시
+static def isAppleSilicon() {
+    return System.getProperty("os.name") == "Mac OS X" && System.getProperty("os.arch") == "aarch64"
 }
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springframework.ai:spring-ai-openai-spring-boot-starter:1.0.0-SNAPSHOT")
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-stackdriver")
+    implementation("com.google.protobuf:protobuf-java:4.28.2")
+    implementation("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+    implementation("org.apache.httpcomponents.client5:httpclient5")
+    implementation(project(":diary-common"))
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("io.projectreactor:reactor-test")
+
+    if (isAppleSilicon()) {
+        runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.94.Final:osx-aarch_64")
+    }
+}
+
 
 tasks.named('test') {
     useJUnitPlatform()
