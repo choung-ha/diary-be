@@ -194,7 +194,7 @@ public class LlmApiServiceTest {
 			.id(diaryId)
 			.userId(userId)
 			.content(content)
-			.pending(false)
+			.pending(true)
 			.build();
 		when(llmApiRepository.reserveDiaryUpdate(diaryId, userId))
 			.thenReturn(Mono.just(diary));
