@@ -13,6 +13,11 @@ management:
       export:
         enabled: true
         project-id: ${GCP_PROJECT_ID}
+        resource-labels:
+          instance-id: mvc
+  metrics:
+    tags:
+      instance: mvc
   server:
     port: ${ACTUATOR_PORT}
 
@@ -22,11 +27,9 @@ spring:
   profiles:
     active: ${SPRING_ACTIVE_PROFILE}
 
-  datasource:
-    url: jdbc:mysql://localhost:3306/diary
-    username: ${DIARY_LOCAL_MYSQL_USERNAME}
-    password: ${DIARY_LOCAL_MYSQL_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    mongodb:
+      uri: ${DIARY_ATLAS_MONGODB}
 
   ai:
     openai:
@@ -34,15 +37,5 @@ spring:
       chat:
         options:
           model: gpt-3.5-turbo
-
-
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
 
 

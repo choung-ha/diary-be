@@ -13,8 +13,14 @@ management:
       export:
         enabled: true
         project-id: ${GCP_PROJECT_ID}
+        resource-labels:
+          instance-id: webflux
+  metrics:
+    tags:
+      instance: webflux
   server:
     port: ${ACTUATOR_PORT}
+
 spring:
   application:
     name: diary
