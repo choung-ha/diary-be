@@ -2,3 +2,6 @@ spring:
   ai:
     openai:
       base-url: ${MOCK_API_URL}
+custom:
+  web-client:
+    max-connections: 100
