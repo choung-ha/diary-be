@@ -1,5 +1,7 @@
 package chungha.diaryllm.service;
 
+import java.io.IOException;
+import java.time.Duration;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -52,29 +54,28 @@ public class LlmApiService {
 				if (diary.getImprovedContent() != null) {
 					return Mono.error(new RuntimeException("이미 피드백이 반영된 일기입니다"));
 				}
-				return callLlmApi(diary.getContent())
-					.flatMap(this::parseFeedback)
-					.flatMap(parsed -> saveFeedBackAfterReservation(diary, parsed))
+				return callAndParseFeedback(diary.getContent())
+					.flatMap(parseFeedback -> saveFeedBackAfterReservation(diary, parseFeedback))
 					.onErrorResume(ex ->
 						llmApiRepository.setPending(diary.getId(), false)
 							.then(Mono.error(ex)));
 			});
 	}
 
-	private Mono<String> callLlmApi(String content) {
+	private Mono<FeedbackRes> callAndParseFeedback(String content) {
 		String prompt = PREFIX_MESSAGE + content;
-		return Mono.fromCallable(() -> openAiChatModel.call(prompt)).subscribeOn(Schedulers.boundedElastic())
+		return Mono.fromCallable(() -> {
+			String rawFeedback = openAiChatModel.call(prompt);
+			return objectMapper.readValue(rawFeedback, FeedbackRes.class);
+		})
+			.subscribeOn(Schedulers.boundedElastic())
 			.retryWhen(
-				Retry.max(3)
-					.filter(throwable -> throwable instanceof RuntimeException)
-					.onRetryExhaustedThrow(((retrySpec, retrySignal) ->
-						new RuntimeException("LLM 호출에 실패했습니다.", retrySignal.failure())))
+				Retry.backoff(3, Duration.ofSeconds(1))
+					.maxBackoff(Duration.ofSeconds(10))
+					.filter(throwable -> (throwable instanceof RuntimeException) || (throwable instanceof IOException))
+				.onRetryExhaustedThrow(((retrySpec, retrySignal) ->
+					new RuntimeException("LLM 호출에 실패했습니다.", retrySignal.failure())))
 			);
-	}
-
-	private Mono<FeedbackRes> parseFeedback(String feedbackJson) {
-		return Mono.fromCallable(() -> objectMapper.readValue(feedbackJson, FeedbackRes.class))
-			.subscribeOn(Schedulers.boundedElastic());
 	}
 
 	private Mono<Diary> saveFeedBackAfterReservation(Diary diary, FeedbackRes feedback) {
