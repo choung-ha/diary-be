@@ -6,9 +6,9 @@ spring:
 custom:
   rest-template:
     connect-timeout: 1000      # 연결 타임아웃(ms)
-    read-timeout: 6500         # 응답 대기 시간(ms)
-    max-total-connections: 400 # 전체 커넥션 수
-    max-per-route: 300         # 호스트당 최대 커넥션 수
+    read-timeout: 10000         # 응답 대기 시간(ms)
+    max-total-connections: 800 # 전체 커넥션 수
+    max-per-route: 800         # 호스트당 최대 커넥션 수
 
   async:
     core-pool-size: 100        # 항상 유지되는 최소 스레드 수
