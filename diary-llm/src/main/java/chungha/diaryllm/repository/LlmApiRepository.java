@@ -1,4 +1,4 @@
-package chungha.diaryllm.service;
+package chungha.diaryllm.repository;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 public class LlmApiRepository {
 	private final ReactiveMongoTemplate reactiveMongoTemplate;
 
-	Mono<Diary> reserveDiaryUpdate(String diaryId, String userId) {
+	public Mono<Diary> reserveDiaryUpdate(String diaryId, String userId) {
 		Query query = new Query(
 			Criteria.where("_id")
 				.is(diaryId)
@@ -33,7 +33,7 @@ public class LlmApiRepository {
 		return reactiveMongoTemplate.findAndModify(query, update, options, Diary.class);
 	}
 
-	Mono<Diary> updateFeedbackAndChanges(
+	public Mono<Diary> updateFeedbackAndChanges(
 		String diaryId,
 		String improvedContent,
 		Map<String, String> feedbackMap) {
@@ -50,7 +50,7 @@ public class LlmApiRepository {
 		return reactiveMongoTemplate.findAndModify(query, updateQuery, options, Diary.class);
 	}
 
-	Mono<Diary> setPending(String diaryId, boolean pending) {
+	public Mono<Diary> setPending(String diaryId, boolean pending) {
 		Query query = new Query(Criteria.where("_id").is(diaryId));
 		Update update = new Update().set("pending", pending);
 		FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true);
