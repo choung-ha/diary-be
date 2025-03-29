@@ -19,8 +19,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import chungha.diarycommon.entity.Diary;
+import chungha.diarycommon.exception.CommonErrorCode;
+import chungha.diarycommon.exception.ServiceException;
 import chungha.diaryllm.model.request.FeedbackReq;
 import chungha.diaryllm.model.response.FeedbackRes;
+import chungha.diaryllm.repository.LlmApiRepository;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -52,7 +55,11 @@ public class LlmApiServiceTest {
 		Mono<Diary> result = llmApiService.createFeedBackAndSave(req);
 
 		StepVerifier.create(result)
-			.expectErrorMessage("일기를 찾을 수 없거나 권한이 없습니다.")
+			.expectErrorMatches(throwable ->
+				throwable instanceof ServiceException serviceException &&
+					serviceException.getErrorCode().equals(CommonErrorCode.DIARY_NOT_FOUND.name()) &&
+					serviceException.getErrorMessage().equals(CommonErrorCode.DIARY_NOT_FOUND.getMessage())
+			)
 			.verify();
 	}
 
@@ -76,7 +83,10 @@ public class LlmApiServiceTest {
 		Mono<Diary> result = llmApiService.createFeedBackAndSave(req);
 
 		StepVerifier.create(result)
-			.expectErrorMessage("이미 피드백이 반영된 일기입니다")
+			.expectErrorMatches(throwable ->
+				throwable instanceof ServiceException serviceException &&
+					serviceException.getErrorCode().equals(CommonErrorCode.DIARY_FEEDBACK_ALREADY_EXISTS.name()) &&
+					serviceException.getErrorMessage().equals(CommonErrorCode.DIARY_FEEDBACK_ALREADY_EXISTS.getMessage()))
 			.verify();
 	}
 
@@ -94,7 +104,10 @@ public class LlmApiServiceTest {
 		Mono<Diary> result = llmApiService.createFeedBackAndSave(req);
 
 		StepVerifier.create(result)
-			.expectErrorMessage("일기를 찾을 수 없거나 권한이 없습니다.")
+			.expectErrorMatches(throwable ->
+				throwable instanceof ServiceException serviceException &&
+					serviceException.getErrorCode().equals(CommonErrorCode.DIARY_NOT_FOUND.name()) &&
+					serviceException.getErrorMessage().equals(CommonErrorCode.DIARY_NOT_FOUND.getMessage()))
 			.verify();
 	}
 
@@ -175,7 +188,10 @@ public class LlmApiServiceTest {
 		Mono<Diary> result = llmApiService.createFeedBackAndSave(new FeedbackReq(userId, diaryId, content));
 
 		StepVerifier.create(result)
-			.expectErrorMessage("LLM 호출에 실패했습니다.")
+			.expectErrorMatches(throwable ->
+				throwable instanceof ServiceException serviceException &&
+					serviceException.getErrorCode().equals(CommonErrorCode.LLM_CALL_FAILED.name()) &&
+					serviceException.getErrorMessage().equals(CommonErrorCode.LLM_CALL_FAILED.getMessage()))
 			.verify();
 
 		verify(openAiChatModel, times(4)).call(anyString());
