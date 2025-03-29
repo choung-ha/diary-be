@@ -8,11 +8,13 @@ import java.util.stream.Collectors;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.stereotype.Service;
 
+import chungha.diarycommon.exception.CommonErrorCode;
 import chungha.diaryllm.model.request.FeedbackReq;
 import chungha.diaryllm.model.response.FeedbackRes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import chungha.diarycommon.entity.Diary;
+import chungha.diaryllm.repository.LlmApiRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -49,10 +51,10 @@ public class LlmApiService {
 
 	public Mono<Diary> createFeedBackAndSave(FeedbackReq req) {
 		return llmApiRepository.reserveDiaryUpdate(req.diaryId(), req.userId())
-			.switchIfEmpty(Mono.error(new RuntimeException("일기를 찾을 수 없거나 권한이 없습니다.")))
+			.switchIfEmpty(Mono.error(CommonErrorCode.DIARY_NOT_FOUND.serviceException()))
 			.flatMap(diary -> {
 				if (diary.getImprovedContent() != null) {
-					return Mono.error(new RuntimeException("이미 피드백이 반영된 일기입니다"));
+					return Mono.error(CommonErrorCode.DIARY_FEEDBACK_ALREADY_EXISTS.serviceException());
 				}
 				return callAndParseFeedback(diary.getContent())
 					.flatMap(parseFeedback -> saveFeedBackAfterReservation(diary, parseFeedback))
@@ -74,7 +76,7 @@ public class LlmApiService {
 					.maxBackoff(Duration.ofSeconds(10))
 					.filter(throwable -> (throwable instanceof RuntimeException) || (throwable instanceof IOException))
 				.onRetryExhaustedThrow(((retrySpec, retrySignal) ->
-					new RuntimeException("LLM 호출에 실패했습니다.", retrySignal.failure())))
+					CommonErrorCode.LLM_CALL_FAILED.serviceException()))
 			);
 	}
 
@@ -82,7 +84,7 @@ public class LlmApiService {
 		String improvedContent = feedback.improvedContent();
 		Map<String, String> sanitizeMap = sanitizeFeedback(feedback.feedback());
 		return llmApiRepository.updateFeedbackAndChanges(diary.getId(), improvedContent, sanitizeMap)
-			.switchIfEmpty(Mono.error(new RuntimeException("조건에 맞는 일기가 없습니다")));
+			.switchIfEmpty(Mono.error(CommonErrorCode.FEEDBACK_SAVE_FAILED.serviceException()));
 	}
 
 
