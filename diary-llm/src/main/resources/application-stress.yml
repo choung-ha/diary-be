@@ -4,4 +4,4 @@ spring:
       base-url: ${MOCK_API_URL}
 custom:
   web-client:
-    max-connections: 100
+    max-connections: ${WEB_CLIENT_MAX_CONNECTIONS}
