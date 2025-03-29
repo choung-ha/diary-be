@@ -3,6 +3,7 @@ management:
     access:
       default: none # 모든 actuator 접근 비활성화
     web:
+      base-path: /actuator
       exposure:
         include: health, info, metrics, threaddump, prometheus
     jmx:

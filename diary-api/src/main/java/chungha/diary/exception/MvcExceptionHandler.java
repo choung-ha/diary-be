@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 import ch.qos.logback.classic.Logger;
 import chungha.diarycommon.exception.ErrorResponse;
 import chungha.diarycommon.exception.ServiceException;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
 public class MvcExceptionHandler {
@@ -77,7 +78,13 @@ public class MvcExceptionHandler {
 	}
 
 	@ExceptionHandler()
-	public ResponseEntity<ErrorResponse> handleException(Exception exception) {
+	public ResponseEntity<ErrorResponse> handleException(Exception exception, HttpServletRequest request) {
+		String uri = request.getRequestURI();
+		if (uri.startsWith("/actuator")) {
+			// actuator 요청은 무시하고 예외 넘김
+			return null; // Spring이 원래 핸들러대로 처리함
+		}
+
 		logger.error(exception.getMessage());
 		var errorResponse = new ErrorResponse(
 			"Sorry, something went wrong",
