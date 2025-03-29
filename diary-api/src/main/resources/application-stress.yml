@@ -15,3 +15,8 @@ custom:
     max-pool-size: 300         # 최대 스레드 수. 요청이 너무 많고 큐까지 꽉 찼을 때
     queue-capacity: 1000
     thread-name-prefix: "AsyncThread-"
+
+server:
+  tomcat:
+    threads:
+      max: ${MAX_THREADS}
