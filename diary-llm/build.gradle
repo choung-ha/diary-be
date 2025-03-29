@@ -42,6 +42,9 @@ dependencies {
 	// diff diary and feedback
 	implementation 'org.bitbucket.cowwoc:diff-match-patch:1.2'
 
+	// Prometheus 메트릭 수집용 추가
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
