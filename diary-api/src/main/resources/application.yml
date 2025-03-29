@@ -17,8 +17,6 @@ management:
   metrics:
     tags:
       instance: mvc
-  server:
-    port: ${ACTUATOR_PORT}
   prometheus:
     metrics:
       export:
