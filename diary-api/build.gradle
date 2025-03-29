@@ -43,6 +43,10 @@ dependencies {
 
 	implementation 'org.apache.httpcomponents.client5:httpclient5'
 
+	// Prometheus 메트릭 수집용 추가
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
+
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

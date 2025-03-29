@@ -4,7 +4,7 @@ management:
       default: none # 모든 actuator 접근 비활성화
     web:
       exposure:
-        include: health, info, metrics, threaddump
+        include: health, info, metrics, threaddump, prometheus
     jmx:
       exposure:
         include: health, info, metrics, threaddump
@@ -18,6 +18,10 @@ management:
       instance: mvc
   server:
     port: ${ACTUATOR_PORT}
+  prometheus:
+    metrics:
+      export:
+        enabled: true
 
 spring:
   application:
