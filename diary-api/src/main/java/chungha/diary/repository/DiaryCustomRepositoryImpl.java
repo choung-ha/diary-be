@@ -53,9 +53,10 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
 		return mongoTemplate.findAndModify(query, update, options, Diary.class);
 	}
 
-	public List<Diary> searchInContent(String keyword) {
-		TextCriteria criteria = TextCriteria.forDefaultLanguage().matching(keyword);
-		Query query = TextQuery.queryText(criteria).sortByScore();
+	public List<Diary> searchInContent(String userId, String keyword) {
+		TextCriteria textCriteria = TextCriteria.forDefaultLanguage().matching(keyword);
+		Criteria userCriteria = Criteria.where("userId").is(userId);
+		Query query = new TextQuery(textCriteria).addCriteria(userCriteria);
 		return mongoTemplate.find(query, Diary.class);
 	}
 

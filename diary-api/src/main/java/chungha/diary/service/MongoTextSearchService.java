@@ -17,7 +17,7 @@ public class MongoTextSearchService implements DiarySearchService {
 	private final DiaryRepository diaryRepository;
 
 	@Override
-	public List<Diary> search(String keyword) {
-		return diaryRepository.searchInContent(keyword);
+	public List<Diary> search(String userId, String keyword) {
+		return diaryRepository.searchInContent(userId, keyword);
 	}
 }

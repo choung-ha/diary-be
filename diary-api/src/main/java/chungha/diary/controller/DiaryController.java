@@ -74,7 +74,7 @@ public class DiaryController {
 
 	@GetMapping("/search")
 	@ResponseStatus(HttpStatus.OK)
-	public List<DiaryRes> searchByKeyword(@RequestParam String keyword) {
-		return diaryService.searchByKeyword(keyword);
+	public List<DiaryRes> searchByKeyword(@RequestParam String userId, @RequestParam String keyword) {
+		return diaryService.searchByKeyword(userId, keyword);
 	}
 }

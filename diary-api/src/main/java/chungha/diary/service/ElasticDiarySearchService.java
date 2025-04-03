@@ -11,7 +11,7 @@ import chungha.diarycommon.entity.Diary;
 @ConditionalOnProperty(name = "diary.search.engine", havingValue = "elastic")
 public class ElasticDiarySearchService implements DiarySearchService {
 	@Override
-	public List<Diary> search(String keyword) {
+	public List<Diary> search(String userId, String keyword) {
 		return List.of();
 	}
 }

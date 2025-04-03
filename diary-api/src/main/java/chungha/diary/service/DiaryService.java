@@ -66,8 +66,8 @@ public class DiaryService {
 		diaryRepository.deleteById(req.diaryId());
 	}
 
-	public List<DiaryRes> searchByKeyword(String keyword) {
-		return diarySearchService.search(keyword).stream().map(DiaryRes::from).toList();
+	public List<DiaryRes> searchByKeyword(String userId, String keyword) {
+		return diarySearchService.search(userId, keyword).stream().map(DiaryRes::from).toList();
 	}
 
 }
