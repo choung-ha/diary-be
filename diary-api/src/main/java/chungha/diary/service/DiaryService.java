@@ -1,5 +1,7 @@
 package chungha.diary.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -21,6 +23,7 @@ public class DiaryService {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 	private final DiaryRepository diaryRepository;
+	private final DiarySearchService diarySearchService;
 
 	/**
 	 * 일기를 생성한다.
@@ -36,7 +39,7 @@ public class DiaryService {
 			.userId(req.userId())
 			.pending(false)
 			.build();
-		diaryRepository.saveDiary(diary);
+		diaryRepository.save(diary);
 	}
 
 	/**
@@ -46,11 +49,11 @@ public class DiaryService {
 	 * @return 일기 목록
 	 */
 	public Page<DiaryRes> getAllDiary(String userId, Pageable pageable) {
-		return diaryRepository.getAllDiary(userId, pageable).map(DiaryRes::from);
+		return diaryRepository.findAllByUserId(userId, pageable).map(DiaryRes::from);
 	}
 
 	public Diary getDiaryById(String diaryId) {
-		return diaryRepository.getDiaryById(diaryId).orElseThrow(CommonErrorCode.DIARY_NOT_FOUND::serviceException);
+		return diaryRepository.findById(diaryId).orElseThrow(CommonErrorCode.DIARY_NOT_FOUND::serviceException);
 	}
 
 	public Diary updateDiary(DiaryUpdateReq req) {
@@ -60,6 +63,11 @@ public class DiaryService {
 
 	public void deleteDiary(DiaryDeleteReq req) {
 		getDiaryById(req.diaryId());
-		diaryRepository.deleteDiaryById(req.diaryId());
+		diaryRepository.deleteById(req.diaryId());
 	}
+
+	public List<DiaryRes> searchByKeyword(String keyword) {
+		return diarySearchService.search(keyword).stream().map(DiaryRes::from).toList();
+	}
+
 }

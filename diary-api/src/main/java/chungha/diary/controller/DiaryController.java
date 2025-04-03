@@ -1,5 +1,7 @@
 package chungha.diary.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -68,5 +70,11 @@ public class DiaryController {
 	@ResponseStatus(HttpStatus.GONE)
 	public void deleteDiaryById(@Valid @RequestBody DiaryDeleteReq req) {
 		diaryService.deleteDiary(req);
+	}
+
+	@GetMapping("/search")
+	@ResponseStatus(HttpStatus.OK)
+	public List<DiaryRes> searchByKeyword(@RequestParam String keyword) {
+		return diaryService.searchByKeyword(keyword);
 	}
 }
