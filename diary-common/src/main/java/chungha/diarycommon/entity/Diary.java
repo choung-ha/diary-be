@@ -3,6 +3,7 @@ package chungha.diarycommon.entity;
 import java.util.Map;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -37,8 +38,8 @@ public class Diary extends BaseEntity {
 	// LLM이 제공한 문장별 수정 이유 (key: 문장/구문, value: 수정 이유)
 	private Map<String, String> feedback;
 
-
 	// 사용자 id
+	@Indexed
 	private String userId;
 
 	// 예약 플래그
