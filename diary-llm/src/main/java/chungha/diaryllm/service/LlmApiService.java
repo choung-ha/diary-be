@@ -9,6 +9,7 @@ import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.stereotype.Service;
 
 import chungha.diarycommon.exception.CommonErrorCode;
+import chungha.diaryllm.exception.LlmErrorCode;
 import chungha.diaryllm.model.request.FeedbackReq;
 import chungha.diaryllm.model.response.FeedbackRes;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,7 +55,7 @@ public class LlmApiService {
 			.switchIfEmpty(Mono.error(CommonErrorCode.DIARY_NOT_FOUND.serviceException()))
 			.flatMap(diary -> {
 				if (diary.getImprovedContent() != null) {
-					return Mono.error(CommonErrorCode.DIARY_FEEDBACK_ALREADY_EXISTS.serviceException());
+					return Mono.error(LlmErrorCode.DIARY_FEEDBACK_ALREADY_EXISTS.serviceException());
 				}
 				return callAndParseFeedback(diary.getContent())
 					.flatMap(parseFeedback -> saveFeedBackAfterReservation(diary, parseFeedback))
@@ -76,7 +77,7 @@ public class LlmApiService {
 					.maxBackoff(Duration.ofSeconds(10))
 					.filter(throwable -> (throwable instanceof RuntimeException) || (throwable instanceof IOException))
 				.onRetryExhaustedThrow(((retrySpec, retrySignal) ->
-					CommonErrorCode.LLM_CALL_FAILED.serviceException()))
+					LlmErrorCode.LLM_CALL_FAILED.serviceException()))
 			);
 	}
 
@@ -84,7 +85,7 @@ public class LlmApiService {
 		String improvedContent = feedback.improvedContent();
 		Map<String, String> sanitizeMap = sanitizeFeedback(feedback.feedback());
 		return llmApiRepository.updateFeedbackAndChanges(diary.getId(), improvedContent, sanitizeMap)
-			.switchIfEmpty(Mono.error(CommonErrorCode.FEEDBACK_SAVE_FAILED.serviceException()));
+			.switchIfEmpty(Mono.error(LlmErrorCode.FEEDBACK_SAVE_FAILED.serviceException()));
 	}
 
 

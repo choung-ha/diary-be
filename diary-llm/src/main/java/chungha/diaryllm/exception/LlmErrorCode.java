@@ -10,7 +10,12 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum LlmErrorCode implements BaseErrorCode {
-	SAMPLE(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류 발생");
+	// llm module
+	DIARY_FEEDBACK_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 피드백이 반영된 일기입니다."),
+	LLM_CALL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "LLM 호출에 실패했습니다."),
+	DIARY_CONDITION_NOT_MATCH(HttpStatus.BAD_REQUEST, "조건에 맞는 일기가 없습니다."),
+	FEEDBACK_SAVE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "피드백 저장에 실패했습니다.");
+
 	private final HttpStatus httpStatus;
 	private final String message;
 

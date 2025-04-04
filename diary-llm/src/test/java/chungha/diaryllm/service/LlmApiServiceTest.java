@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import chungha.diarycommon.entity.Diary;
 import chungha.diarycommon.exception.CommonErrorCode;
 import chungha.diarycommon.exception.ServiceException;
+import chungha.diaryllm.exception.LlmErrorCode;
 import chungha.diaryllm.model.request.FeedbackReq;
 import chungha.diaryllm.model.response.FeedbackRes;
 import chungha.diaryllm.repository.LlmApiRepository;
@@ -85,8 +86,8 @@ public class LlmApiServiceTest {
 		StepVerifier.create(result)
 			.expectErrorMatches(throwable ->
 				throwable instanceof ServiceException serviceException &&
-					serviceException.getErrorCode().equals(CommonErrorCode.DIARY_FEEDBACK_ALREADY_EXISTS.name()) &&
-					serviceException.getErrorMessage().equals(CommonErrorCode.DIARY_FEEDBACK_ALREADY_EXISTS.getMessage()))
+					serviceException.getErrorCode().equals(LlmErrorCode.DIARY_FEEDBACK_ALREADY_EXISTS.name()) &&
+					serviceException.getErrorMessage().equals(LlmErrorCode.DIARY_FEEDBACK_ALREADY_EXISTS.getMessage()))
 			.verify();
 	}
 
@@ -190,8 +191,8 @@ public class LlmApiServiceTest {
 		StepVerifier.create(result)
 			.expectErrorMatches(throwable ->
 				throwable instanceof ServiceException serviceException &&
-					serviceException.getErrorCode().equals(CommonErrorCode.LLM_CALL_FAILED.name()) &&
-					serviceException.getErrorMessage().equals(CommonErrorCode.LLM_CALL_FAILED.getMessage()))
+					serviceException.getErrorCode().equals(LlmErrorCode.LLM_CALL_FAILED.name()) &&
+					serviceException.getErrorMessage().equals(LlmErrorCode.LLM_CALL_FAILED.getMessage()))
 			.verify();
 
 		verify(openAiChatModel, times(4)).call(anyString());
