@@ -1,12 +1,12 @@
 package chungha.diary.service;
 
-import java.util.List;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import chungha.diary.model.response.DiaryRes;
 import chungha.diary.repository.DiaryRepository;
-import chungha.diarycommon.entity.Diary;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -17,7 +17,7 @@ public class MongoTextSearchService implements DiarySearchService {
 	private final DiaryRepository diaryRepository;
 
 	@Override
-	public List<Diary> search(String userId, String keyword) {
-		return diaryRepository.searchInContent(userId, keyword);
+	public Page<DiaryRes> search(String userId, Pageable pageable, String keyword) {
+		return diaryRepository.findByKeyword(userId, pageable, keyword).map(DiaryRes::from);
 	}
 }

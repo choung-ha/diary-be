@@ -1,9 +1,10 @@
 package chungha.diary.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import chungha.diarycommon.entity.Diary;
+import chungha.diary.model.response.DiaryRes;
 
 public interface DiarySearchService {
-	List<Diary> search(String userId, String keyword);
+	Page<DiaryRes> search(String userId, Pageable pageable, String keyword);
 }

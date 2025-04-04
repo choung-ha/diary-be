@@ -17,22 +17,28 @@ import org.springframework.stereotype.Repository;
 
 import chungha.diary.model.request.DiaryUpdateReq;
 import chungha.diarycommon.entity.Diary;
+import chungha.diarycommon.model.Emotion;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Repository
 public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
 	private final MongoTemplate mongoTemplate;
+	private static final String USER_ID = "userId";
+
+	private Page<Diary> getPage(Query query, Pageable pageable) {
+		// pageable을 적용하여 조회
+		List<Diary> list = mongoTemplate.find(query.with(pageable), Diary.class);
+		// count 쿼리는 pageable 조건 없이 원본 조건으로 생성
+		Query countQuery = Query.of(query);
+		long count = mongoTemplate.count(countQuery, Diary.class);
+		return PageableExecutionUtils.getPage(list, pageable, () -> count);
+	}
 
 	public Page<Diary> findAllByUserId(String userId, Pageable pageable) {
-		Criteria userCriteria = Criteria.where("userId").is(userId);
-		Query query = new Query(userCriteria).with(pageable);
-		// pageable과 같이쓰면 제대로 안나온다. totalCount가 page * pageSize 값으로 나옴
-		Query countQuery = new Query(userCriteria);
-
-		List<Diary> diaryList = mongoTemplate.find(query, Diary.class);
-		return PageableExecutionUtils.getPage(diaryList, pageable,
-			() -> mongoTemplate.count(countQuery, Diary.class));
+		Criteria userCriteria = Criteria.where(USER_ID).is(userId);
+		Query query = new Query(userCriteria);
+		return getPage(query, pageable);
 	}
 
 	public Diary updateDiary(DiaryUpdateReq req) {
@@ -53,11 +59,21 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
 		return mongoTemplate.findAndModify(query, update, options, Diary.class);
 	}
 
-	public List<Diary> searchInContent(String userId, String keyword) {
+	public Page<Diary> findByKeyword(String userId, Pageable pageable, String keyword) {
 		TextCriteria textCriteria = TextCriteria.forDefaultLanguage().matching(keyword);
-		Criteria userCriteria = Criteria.where("userId").is(userId);
+		Criteria userCriteria = Criteria.where(USER_ID).is(userId);
 		Query query = new TextQuery(textCriteria).addCriteria(userCriteria);
-		return mongoTemplate.find(query, Diary.class);
+		return getPage(query, pageable);
 	}
 
+	public Page<Diary> findByCreatedAtBetween(String userId, Pageable pageable,
+		LocalDateTime start, LocalDateTime end) {
+		Criteria criteria = Criteria.where(USER_ID).is(userId).and("createdAt").gte(start).lte(end);
+		return getPage(new Query(criteria), pageable);
+	}
+
+	public Page<Diary> findByEmotion(String userId, Pageable pageable, Emotion emotion) {
+		Criteria criteria = Criteria.where(USER_ID).is(userId).and("emotion").is(emotion);
+		return getPage(new Query(criteria), pageable);
+	}
 }
