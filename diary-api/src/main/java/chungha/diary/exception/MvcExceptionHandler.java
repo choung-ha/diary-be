@@ -8,14 +8,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import ch.qos.logback.classic.Logger;
 import chungha.diarycommon.exception.ErrorResponse;
 import chungha.diarycommon.exception.ServiceException;
+import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 public class MvcExceptionHandler {
@@ -23,67 +24,43 @@ public class MvcExceptionHandler {
 	final ZoneId zoneId = ZoneId.of("Asia/Seoul");
 
 	@ExceptionHandler(ServiceException.class)
-	public ResponseEntity<ErrorResponse> handleServiceException(ServiceException ex) {
-		if (ex.getDebugMessage() != null) {
-			logger.error(ex.getMessage());
+	public ResponseEntity<ErrorResponse> handleServiceException(ServiceException exception) {
+		if (exception.getDebugMessage() != null) {
+			logger.error(exception.getMessage());
 		}
 
 		var errorResponse = new ErrorResponse(
-			ex.getErrorMessage(),
+			exception.getErrorMessage(),
 			ZonedDateTime.now(zoneId)
 		);
-		var httpStatus = MvcErrorCode.valueOf(ex.getErrorCode()).getHttpStatus();
+		var httpStatus = MvcErrorCode.valueOf(exception.getErrorCode()).getHttpStatus();
 
 		return ResponseEntity.status(httpStatus).body(errorResponse);
 	}
 
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ErrorResponse> handleValidException(MethodArgumentNotValidException exception) {
-		StringBuilder errorMessageBuilder = new StringBuilder();
-		exception.getBindingResult().getFieldErrors().forEach(error -> {
-			String fieldName = error.getField();
-			String errorMessage = error.getDefaultMessage();
-			errorMessageBuilder.append(fieldName).append(" : ").append(errorMessage).append("\n");
-		});
-		String errorMessages = "Request is not Valid. Please Check Again";
+	@ExceptionHandler({
+		MethodArgumentNotValidException.class,
+		HttpMessageNotReadableException.class,
+		MissingServletRequestParameterException.class,
+		ConstraintViolationException.class,
+		MethodArgumentTypeMismatchException.class
+	})
+	public ResponseEntity<ErrorResponse> handleBadRequestExceptions(Exception exception) {
+		logger.error("Bad request [{}]: {}", exception.getClass().getSimpleName(), exception.getMessage(), exception);
+		String errorMessage = "요청이 잘못되었습니다.";
 
-		if (!errorMessageBuilder.isEmpty()) {
-			errorMessages = errorMessageBuilder.toString();
-			logger.error(errorMessages);
-		}
-
-		var errorResponse = new ErrorResponse(
-			errorMessages,
-			ZonedDateTime.now(zoneId)
-		);
-
-		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-	}
-
-	@ExceptionHandler(HttpMessageNotReadableException.class)
-	public ResponseEntity<ErrorResponse> handleDeserializationException(HttpMessageNotReadableException exception) {
-		Throwable cause = exception.getCause();
-		if (cause instanceof ValueInstantiationException) {
-			Throwable nested = cause.getCause();
-			if (nested instanceof ServiceException) {
-				ErrorResponse errorResponse = new ErrorResponse(nested.getMessage(), ZonedDateTime.now(zoneId));
-				return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-			}
-		}
-		// 그 외 예외는 기본 500 처리
-		logger.error(exception.getMessage());
-		var errorResponse = new ErrorResponse("Sorry, something went wrong", ZonedDateTime.now(zoneId));
-		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		return ResponseEntity
+			.status(HttpStatus.BAD_REQUEST)
+			.body(new ErrorResponse(errorMessage, ZonedDateTime.now(zoneId)));
 	}
 
 	@ExceptionHandler()
 	public ResponseEntity<ErrorResponse> handleException(Exception exception) {
 		logger.error(exception.getMessage());
 		var errorResponse = new ErrorResponse(
-			"Sorry, something went wrong",
+			"관리자의 도움이 필요합니다.",
 			ZonedDateTime.now(zoneId)
 		);
-
 		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }
