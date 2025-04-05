@@ -40,6 +40,7 @@ public class Diary extends BaseEntity {
 
 	// 사용자 id
 	@Indexed
+	@Field("user_id")
 	private String userId;
 
 	// 예약 플래그

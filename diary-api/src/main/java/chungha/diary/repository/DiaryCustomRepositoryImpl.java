@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @Repository
 public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
 	private final MongoTemplate mongoTemplate;
-	private static final String USER_ID = "userId";
+	private static final String USER_ID = "user_id";
 
 	private Page<Diary> getPage(Query query, Pageable pageable) {
 		// pageable을 적용하여 조회
