@@ -10,7 +10,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum MvcErrorCode implements BaseErrorCode {
-	SAMPLE(HttpStatus.BAD_REQUEST, "일단 존재해야됨");
+	// 다이어리 검색 예외
+	WRONG_DATE_RANGE(HttpStatus.BAD_REQUEST, "검색 범위가 유효하지 않습니다."),
+
+	;
 
 	private final HttpStatus httpStatus;
 	private final String message;
